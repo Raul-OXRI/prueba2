@@ -27,27 +27,8 @@ docker-compose run --rm app bash -lc "rm -rf /var/www/html"
 
 
 ```bash
-docker-compose run --rm app bash -lc "rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true; GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=accept-new' git clone git@github.com:Raul-OXRI/reporte.git /var/www"
+docker-compose run --rm app bash -lc "rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true; mkdir -p /tmp/ssh; cp /root/.ssh/id_ed25519 /tmp/ssh/id_ed25519; chmod 600 /tmp/ssh/id_ed25519; GIT_SSH_COMMAND='ssh -F /dev/null -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' git clone git@github.com:Raul-OXRI/reporte.git /var/www"
 ```
-
-<!-- docker-compose run --rm app bash -lc "
-rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true;
-mkdir -p /tmp/ssh;
-cp /root/.ssh/oxri_git /tmp/ssh/id_ed25519;
-chmod 600 /tmp/ssh/id_ed25519;
-GIT_SSH_COMMAND='ssh -F /dev/null -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' \
-git clone git@github.com:Raul-OXRI/reporte.git /var/www
-" -->
-<!-- 
-```bash
-docker-compose run --rm app bash -lc 'rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true; \
-mkdir -p /tmp/ssh; \
-cp /root/.ssh/oxri_git /tmp/ssh/id_ed25519; \
-chmod 600 /tmp/ssh/id_ed25519; \
-GIT_SSH_COMMAND="ssh -F /dev/null -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
-git clone git@github.com:Raul-OXRI/reporte.git /var/www'
-```
- -->
 
 4. Instalar dependencias:
 
@@ -91,6 +72,7 @@ DB_DATABASE=prueba
 DB_USERNAME=devuser
 DB_PASSWORD=devpass
 ```
+
 
 Ejemplo para editar el `.env` dentro del contenedor:
 

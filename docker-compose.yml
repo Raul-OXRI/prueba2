@@ -4,14 +4,16 @@ services:
       context: .
       dockerfile: dockerfile
     container_name: laravel_app
+    env_file:
+      - .env
     restart: unless-stopped
     working_dir: /var/www
     volumes:
       - app_code:/var/www
       - composer_cache:/tmp/composer-cache
-      - ${HOME}/.ssh:/root/.ssh:ro
+      - ${SSH_PATH}:/root/.ssh:ro
     environment:
-      GIT_SSH_COMMAND: ssh -o StrictHostKeyChecking=accept-new
+      GIT_SSH_COMMAND: ${GIT_SSH_COMMAND}
     networks:
       - laravel
     dns:
