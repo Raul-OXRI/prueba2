@@ -25,13 +25,29 @@ docker-compose run --rm app bash -lc "rm -rf /var/www/html"
 
 3. Clonar el proyecto Laravel dentro del contenedor (volumen `app_code`) usando SSH de tu PC:
 
-<!-- ```bash
-docker-compose run --rm app bash -lc "mkdir -p /tmp/ssh; cp /root/.ssh/id_ed25519 /tmp/ssh/id_ed25519; chmod 600 /tmp/ssh/id_ed25519; GIT_SSH_COMMAND='ssh -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' git clone git@github.com:Raul-OXRI/reporte.git /var/www"
-``` -->
 
 ```bash
-docker-compose run --rm app bash -lc "rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true; mkdir -p /tmp/ssh; cp /root/.ssh/id_ed25519 /tmp/ssh/id_ed25519; chmod 600 /tmp/ssh/id_ed25519; GIT_SSH_COMMAND='ssh -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' git clone git@github.com:Raul-OXRI/reporte.git /var/www"
+docker-compose run --rm app bash -lc "rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true; GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=accept-new' git clone git@github.com:Raul-OXRI/reporte.git /var/www"
 ```
+
+<!-- docker-compose run --rm app bash -lc "
+rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true;
+mkdir -p /tmp/ssh;
+cp /root/.ssh/oxri_git /tmp/ssh/id_ed25519;
+chmod 600 /tmp/ssh/id_ed25519;
+GIT_SSH_COMMAND='ssh -F /dev/null -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' \
+git clone git@github.com:Raul-OXRI/reporte.git /var/www
+" -->
+<!-- 
+```bash
+docker-compose run --rm app bash -lc 'rm -rf /var/www/* /var/www/.[!.]* /var/www/..?* 2>/dev/null || true; \
+mkdir -p /tmp/ssh; \
+cp /root/.ssh/oxri_git /tmp/ssh/id_ed25519; \
+chmod 600 /tmp/ssh/id_ed25519; \
+GIT_SSH_COMMAND="ssh -F /dev/null -i /tmp/ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
+git clone git@github.com:Raul-OXRI/reporte.git /var/www'
+```
+ -->
 
 4. Instalar dependencias:
 
@@ -54,7 +70,7 @@ docker-compose exec app php artisan key:generate
 7. (Opcional) Si aparece error `500`, corregir permisos y limpiar caché:
 
 ```bash
-docker compose exec app bash -lc "chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache; chmod -R ug+rwx /var/www/storage /var/www/bootstrap/cache; php artisan optimize:clear"
+docker-compose exec app bash -lc "chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache; chmod -R ug+rwx /var/www/storage /var/www/bootstrap/cache; php artisan optimize:clear"
 ```
 
 ## SSH para clonar repos privados
@@ -79,13 +95,13 @@ DB_PASSWORD=devpass
 Ejemplo para editar el `.env` dentro del contenedor:
 
 ```bash
-docker compose exec app bash -lc "cp -n /var/www/.env.example /var/www/.env"
-docker compose exec app bash -lc "sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' /var/www/.env"
-docker compose exec app bash -lc "sed -i 's/^DB_HOST=.*/DB_HOST=host.docker.internal/' /var/www/.env"
-docker compose exec app bash -lc "sed -i 's/^DB_PORT=.*/DB_PORT=5432/' /var/www/.env"
-docker compose exec app bash -lc "sed -i 's/^DB_DATABASE=.*/DB_DATABASE=prueba/' /var/www/.env"
-docker compose exec app bash -lc "sed -i 's/^DB_USERNAME=.*/DB_USERNAME=devuser/' /var/www/.env"
-docker compose exec app bash -lc "sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=devpass/' /var/www/.env"
+docker-compose exec app bash -lc "cp -n /var/www/.env.example /var/www/.env"
+docker-compose exec app bash -lc "sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' /var/www/.env"
+docker-compose exec app bash -lc "sed -i 's/^DB_HOST=.*/DB_HOST=dev-postgres/' /var/www/.env"
+docker-compose exec app bash -lc "sed -i 's/^DB_PORT=.*/DB_PORT=5432/' /var/www/.env"
+docker-compose exec app bash -lc "sed -i 's/^DB_DATABASE=.*/DB_DATABASE=prueba/' /var/www/.env"
+docker-compose exec app bash -lc "sed -i 's/^DB_USERNAME=.*/DB_USERNAME=devuser/' /var/www/.env"
+docker-compose exec app bash -lc "sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=devpass/' /var/www/.env"
 ```
 
 ## Comandos útiles
